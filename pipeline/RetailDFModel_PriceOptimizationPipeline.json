@@ -27,6 +27,32 @@
 					"referenceName": "HDInsightLinkedService",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "DFMdoelSparkJob",
+				"description": "Submits a Spark Job",
+				"type": "HDInsightSpark",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"rootPath": "aggdatasparkjob",
+					"entryFilePath": "Demand_Forecasting_Model_Training_First_Time_Pipeline_2.0_blob.py",
+					"sparkJobLinkedService": {
+						"referenceName": "StorageLinkedService",
+						"type": "LinkedServiceReference"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "HDInsightLinkedService",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": [],
