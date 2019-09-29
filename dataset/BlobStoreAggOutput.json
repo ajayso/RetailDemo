@@ -1,0 +1,57 @@
+{
+	"name": "BlobStoreAggOutput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "StorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"properties": {
+					"type": "object",
+					"properties": {
+						"published": {
+							"type": "boolean"
+						},
+						"type": {
+							"type": "string"
+						},
+						"linkedServiceName": {
+							"type": "string"
+						},
+						"typeProperties": {
+							"type": "object",
+							"properties": {
+								"folderPath": {
+									"type": "string"
+								}
+							}
+						},
+						"availability": {
+							"type": "object",
+							"properties": {
+								"frequency": {
+									"type": "string"
+								},
+								"interval": {
+									"type": "integer"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
