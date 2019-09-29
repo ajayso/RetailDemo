@@ -18,6 +18,9 @@
 				"typeProperties": {
 					"rootPath": "aggdatasparkjob",
 					"entryFilePath": "Sales_Data_Aggregation_2.0_blob.py",
+					"arguments": [
+						"@variables('storage_name')"
+					],
 					"sparkJobLinkedService": {
 						"referenceName": "StorageLinkedService",
 						"type": "LinkedServiceReference"
