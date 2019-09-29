@@ -1,0 +1,265 @@
+{
+    "name": "RetailDFModel_PriceOptimizationPipeline_Daily",
+    "properties": {
+        "description": "Retail Price Optimization Pipeline with Model Training (weekly)",
+        "activities": [
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource",
+                        "recursive": true
+                    },
+                    "sink": {
+                        "type": "AzureDataLakeStoreSink",
+                        "copyBehavior": "PreserveHierarchy",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "AzureBlobInputPublicParametersDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "ADLStoreOutputPublicParametersDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "AzureBlobtoDataLakePublicParameters",
+                "description": "Copy Activity"
+            },
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource",
+                        "recursive": true
+                    },
+                    "sink": {
+                        "type": "AzureDataLakeStoreSink",
+                        "copyBehavior": "PreserveHierarchy",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "AzureBlobInputRawDataDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "ADLStoreOutputRawDataDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                     "retry": 3
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "AzureBlobtoDataLakeRawData",
+                "description": "Copy Activity"
+            },
+            {
+                "type": "HDInsightMapReduce",
+                "typeProperties": {
+                    "className": "com.adf.sparklauncher.AdfSparkJobLauncher",
+                    "jarFilePath": "adflibs/com.adf.sparklauncher.jar",
+                    "jarLinkedService": "StorageLinkedService",
+                    "arguments": [
+                        "--appFile",
+                        "wasb://adflibs@<Storage-Account-Name>.blob.core.windows.net/Sales_Data_Aggregation.py",
+                        "--deploy_mode",
+                        "cluster"
+                    ]
+                },
+                "inputs": [
+                    {
+                        "name": "ADLStoreOutputRawDataDaily"
+                    },
+                    {
+                        "name": "ADLStoreOutputPublicParametersDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "ADLStoreAggOutputDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "AggDataSparkJob",
+                "description": "Submits a Spark Job",
+                "linkedServiceName": "HDInsightLinkedService"
+            },
+            {
+                "type": "HDInsightMapReduce",
+                "typeProperties": {
+                    "className": "com.adf.sparklauncher.AdfSparkJobLauncher",
+                    "jarFilePath": "adflibs/com.adf.sparklauncher.jar",
+                    "jarLinkedService": "StorageLinkedService",
+                    "arguments": [
+                        "--appFile",
+                        "wasb://adflibs@<Storage-Account-Name>.blob.core.windows.net/Demand_Forecasting_Model_Training_First_Time_Pipeline.py",
+                        "--deploy_mode",
+                        "cluster"
+                    ]
+                },
+                "inputs": [
+                    {
+                        "name": "ADLStoreAggOutputDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "ADLStoreDFModelOutputDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "DFMdoelSparkJob",
+                "description": "Submits a Spark Job",
+                "linkedServiceName": "HDInsightLinkedService"
+            },
+            {
+                "type": "HDInsightMapReduce",
+                "typeProperties": {
+                    "className": "com.adf.sparklauncher.AdfSparkJobLauncher",
+                    "jarFilePath": "adflibs/com.adf.sparklauncher.jar",
+                    "jarLinkedService": "StorageLinkedService",
+                    "arguments": [
+                        "--appFile",
+                        "wasb://adflibs@<Storage-Account-Name>.blob.core.windows.net/Price_Optimization.py",
+                        "--deploy_mode",
+                        "cluster"
+                    ]
+                },
+                "inputs": [
+                    {
+                        "name": "ADLStoreDFModelOutputDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "ADLStorePriceOptOutputDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "PriceOptSparkJob",
+                "description": "Submits a Spark Job",
+                "linkedServiceName": "HDInsightLinkedService"
+            },
+            {
+                "type": "HDInsightMapReduce",
+                "typeProperties": {
+                    "className": "com.adf.sparklauncher.AdfSparkJobLauncher",
+                    "jarFilePath": "adflibs/com.adf.sparklauncher.jar",
+                    "jarLinkedService": "StorageLinkedService",
+                    "arguments": [
+                        "--appFile",
+                        "wasb://adflibs@<Storage-Account-Name>.blob.core.windows.net/Powerbi_Processing.py",
+                        "--deploy_mode",
+                        "cluster"
+                    ]
+                },
+                "inputs": [
+                    {
+                        "name": "ADLStorePriceOptOutputDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "ADLStorePowerBIOutputDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "PowerBISparkJob",
+                "description": "Submits a Spark Job",
+                "linkedServiceName": "HDInsightLinkedService"
+            },
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureDataLakeStoreSource",
+                        "recursive": true
+                    },
+                    "sink": {
+                        "type": "BlobSink",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "ADLStorePriceOptOutputDaily"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "AzureBlobOutputPriceChangeDaily"
+                    }
+                ],
+                "policy": {
+                    "timeout": "10:00:00",
+                    "concurrency": 1,
+                     "retry": 3
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "ADLtoBlobPriceChange",
+                "description": "Copy Activity"
+            }
+        ],
+        "start": "<Start-Date>",
+        "end": "<End-Date>",
+        "isPaused": false,
+        "pipelineMode": "Scheduled"
+    }
+}
