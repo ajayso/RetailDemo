@@ -29,6 +29,39 @@
 				"name": "AggDataSparkJob",
 				"description": "Submits a Spark Job",
 				"linkedServiceName": "HDInsightLinkedService"
+			},
+			{
+				"type": "HDInsightSpark",
+				"typeProperties": {
+					"rootPath": "adflibs",
+					"entryFilePath": "Demand_Forecasting_Model_Training_First_Time_Pipeline_2.0_blob.py",
+					"arguments": [
+						"retailtemplate_resourcegroup"
+					],
+					"getDebugInfo": "Always"
+				},
+				"inputs": [
+					{
+						"name": "BlobStoreAggOutput"
+					}
+				],
+				"outputs": [
+					{
+						"name": "BlobtoreDFModelOutput"
+					}
+				],
+				"policy": {
+					"timeout": "00:30:00",
+					"concurrency": 1,
+					"retry": 1
+				},
+				"scheduler": {
+					"frequency": "Hour",
+					"interval": 1
+				},
+				"name": "DFMdoelSparkJob",
+				"description": "Submits a Spark Job",
+				"linkedServiceName": "HDInsightLinkedService"
 			}
 		],
 		"start": "2019-09-01T22:00:00Z",
