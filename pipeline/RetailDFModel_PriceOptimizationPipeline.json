@@ -81,6 +81,12 @@
 				}
 			}
 		],
+		"variables": {
+			"storage_name": {
+				"type": "String",
+				"defaultValue": "retailtemplateresourcegr"
+			}
+		},
 		"annotations": [],
 		"start": "2019-09-01T22:00:00Z",
 		"end": "2019-10-10T22:00:00Z",
