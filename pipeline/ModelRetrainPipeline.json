@@ -1,6 +1,33 @@
 {
 	"name": "ModelRetrainPipeline",
 	"properties": {
+		"activities": [
+			{
+				"name": "DFModelRetrainSparkJob",
+				"type": "HDInsightSpark",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"rootPath": "dfmodelretrainsparkjob",
+					"entryFilePath": "Demand_Forecasting_Model_Training_Pipeline_2.0_blob.py",
+					"sparkJobLinkedService": {
+						"referenceName": "StorageLinkedService",
+						"type": "LinkedServiceReference"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "HDInsightLinkedService",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
 		"annotations": []
 	}
 }
