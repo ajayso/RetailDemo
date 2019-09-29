@@ -1,102 +1,35 @@
 {
 	"name": "RetailDFModel_PriceOptimizationPipeline",
 	"properties": {
-		"annotations": [
+		"activities": [
 			{
-				"type": "HDInsightSpark",
-				"typeProperties": {
-					"rootPath": "adflibs",
-					"entryFilePath": "Sales_Data_Aggregation_2.0_blob.py",
-					"arguments": [
-						"retailtemplate_resourcegroup"
-					],
-					"getDebugInfo": "Always"
-				},
-				"outputs": [
-					{
-						"name": "BlobStoreAggOutput"
-					}
-				],
-				"policy": {
-					"timeout": "00:30:00",
-					"concurrency": 1,
-					"retry": 1
-				},
-				"scheduler": {
-					"frequency": "Hour",
-					"interval": 1
-				},
 				"name": "AggDataSparkJob",
 				"description": "Submits a Spark Job",
-				"linkedServiceName": "HDInsightLinkedService"
-			},
-			{
 				"type": "HDInsightSpark",
-				"typeProperties": {
-					"rootPath": "adflibs",
-					"entryFilePath": "Demand_Forecasting_Model_Training_First_Time_Pipeline_2.0_blob.py",
-					"arguments": [
-						"retailtemplate_resourcegroup"
-					],
-					"getDebugInfo": "Always"
-				},
-				"inputs": [
-					{
-						"name": "BlobStoreAggOutput"
-					}
-				],
-				"outputs": [
-					{
-						"name": "BlobtoreDFModelOutput"
-					}
-				],
+				"dependsOn": [],
 				"policy": {
-					"timeout": "00:30:00",
-					"concurrency": 1,
-					"retry": 1
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
 				},
-				"scheduler": {
-					"frequency": "Hour",
-					"interval": 1
-				},
-				"name": "DFMdoelSparkJob",
-				"description": "Submits a Spark Job",
-				"linkedServiceName": "HDInsightLinkedService"
-			},
-			{
-				"type": "HDInsightSpark",
+				"userProperties": [],
 				"typeProperties": {
-					"rootPath": "adflibs",
-					"entryFilePath": "Price_Optimization_2.0_blob.py",
-					"arguments": [
-						"retailtemplate_resourcegroup"
-					],
-					"getDebugInfo": "Always"
-				},
-				"inputs": [
-					{
-						"name": "BlobtoreDFModelOutput"
+					"rootPath": "aggdatasparkjob",
+					"entryFilePath": "Sales_Data_Aggregation_2.0_blob.py",
+					"sparkJobLinkedService": {
+						"referenceName": "StorageLinkedService",
+						"type": "LinkedServiceReference"
 					}
-				],
-				"outputs": [
-					{
-						"name": "BlobStorePriceOptOutput"
-					}
-				],
-				"policy": {
-					"timeout": "00:30:00",
-					"concurrency": 1,
-					"retry": 1
 				},
-				"scheduler": {
-					"frequency": "Hour",
-					"interval": 1
-				},
-				"name": "PriceOptSparkJob",
-				"description": "Submits a Spark Job",
-				"linkedServiceName": "HDInsightLinkedService"
+				"linkedServiceName": {
+					"referenceName": "HDInsightLinkedService",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
+		"annotations": [],
 		"start": "2019-09-01T22:00:00Z",
 		"end": "2019-10-10T22:00:00Z",
 		"isPaused": false,
